@@ -15,7 +15,7 @@ def resize_images(image_dir, output_dir, size):
     images = os.listdir(image_dir)
     num_images = len(images)
     for i, image in enumerate(images):
-        with open(os.path.join(image_dir, image), 'r+b') as f:
+        with open(os.path.join(image_dir, image), 'rb') as f:
             with Image.open(f) as img:
                 img = resize_image(img, size)
                 img.save(os.path.join(output_dir, image), img.format)
@@ -32,7 +32,10 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image_dir', type=str, default='./data/train2014/',
+    # parser.add_argument('--image_dir', type=str, default='./data/train2014/',
+    #                     help='directory for train images')
+# if on JupyterLab:
+    parser.add_argument('--image_dir', type=str, default='../datasets/coco2014/train2014',
                         help='directory for train images')
     parser.add_argument('--output_dir', type=str, default='./data/resized2014/',
                         help='directory for saving resized images')

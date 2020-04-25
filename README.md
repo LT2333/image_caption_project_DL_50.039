@@ -26,6 +26,11 @@ In the test phase, the encoder part is almost same as the training phase. The on
 conda install kivy -c conda-forge  
 python gui.py 
 ```
+*If you counter problem of pygame on Mac system:*
+    ```
+    pip install pygame
+    ``` 
+
 #### 2) Test the model from the terminal
 
 ```bash
@@ -53,6 +58,7 @@ chmod +x download_pretrained.sh
 
 #### 1. Clone the repositories
 ```bash
+cd ../
 git clone https://github.com/pdollar/coco.git
 cd coco/PythonAPI/
 make
