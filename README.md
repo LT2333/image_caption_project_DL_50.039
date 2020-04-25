@@ -42,7 +42,10 @@ python sample.py --image='png/example.png'
 ### Option 1. Using Pretrained model
 If you do not want to train the model from scratch, you can use a pretrained model. You can download the pretrained model [here](https://www.dropbox.com/s/ne0ixz5d58ccbbz/pretrained_model.zip?dl=0) and the vocabulary file [here](https://www.dropbox.com/s/26adb7y9m98uisa/vocap.zip?dl=0). You should extract pretrained_model.zip to `./models/` and vocab.pkl to `./data/` using `unzip` command.
 
-
+```bash
+chmod +x download_pretrained.sh
+./download_pretrained.sh
+```
 
 <br>
 
