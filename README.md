@@ -7,13 +7,13 @@ The Image Captioning project for SUTD 50.039 Deep Learning
 # A video demo on our project
 https://www.dropbox.com/sh/qfabcdkb6y6ulgq/AABfJeCEvYbmFCTgDyF2Ovgea?dl=0
 
-# Referrence 
+# Reference 
 Adapted code from:
 https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning
 
 
 # Image Captioning
-The goal of image captioning is to convert a given input image into a natural language description. The encoder-decoder framework is widely used for this task. The image encoder is a convolutional neural network (CNN). In this tutorial, we used [resnet-152](https://arxiv.org/abs/1512.03385) model pretrained on the [ILSVRC-2012-CLS](http://www.image-net.org/challenges/LSVRC/2012/) image classification dataset. The decoder is a long short-term memory (GRU)) network. 
+The goal of image captioning is to convert a given input image into a natural language description. The encoder-decoder framework is widely used for this task. The image encoder is a convolutional neural network (CNN). In this tutorial, we used [resnet-152](https://arxiv.org/abs/1512.03385) model pretrained on the [ILSVRC-2012-CLS](http://www.image-net.org/challenges/LSVRC/2012/) image classification dataset. The decoder is a GRU network. 
 
 ![alt text](png/model.png)
 
@@ -48,20 +48,7 @@ python sample.py --image='png/example.png'
 
 ## Prepare model
 
-
-### Option 1. Using Pretrained model
-If you do not want to train the model from scratch, you can use a pretrained model. You can download the pretrained model [here](https://www.dropbox.com/s/ne0ixz5d58ccbbz/pretrained_model.zip?dl=0) and the vocabulary file [here](https://www.dropbox.com/s/26adb7y9m98uisa/vocap.zip?dl=0). You should extract pretrained_model.zip to `./models/` and vocab.pkl to `./data/` using `unzip` command.
-
-```bash
-chmod +x download_pretrained.sh
-./download_pretrained.sh
-```
-
-<br>
-
-### Option 2.Train from scratch
-
-#### 1. Clone the repositories
+### Step 1. Prepare environment 
 The package pycocotools requires cython and a C compiler to install correctly.
 If you are using Linux or Mac system:
 ```bash
@@ -80,8 +67,16 @@ If you are using Windows, you can install pycocotools as follows:
 pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI
 ```
 
+### Step 2. Option 1. Using Pretrained model
+If you do not want to train the model from scratch, you can use our 3 trained models. You can download the pretrained model [here](https://sutdapac-my.sharepoint.com/personal/lutong_zhao_mymail_sutd_edu_sg/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flutong%5Fzhao%5Fmymail%5Fsutd%5Fedu%5Fsg%2FDocuments%2FDL%5FProject%2Fmodels&originalPath=aHR0cHM6Ly9zdXRkYXBhYy1teS5zaGFyZXBvaW50LmNvbS86ZjovZy9wZXJzb25hbC9sdXRvbmdfemhhb19teW1haWxfc3V0ZF9lZHVfc2cvRW9oMS1PTEZjN1pHcDBlQnV0Zk9VZVFCTDhfbDN0bzRCTGlVd0NkNDhhYjdJQT9ydGltZT15ZWhGN3dMcTEwZw) and the vocabulary file [here](https://sutdapac-my.sharepoint.com/personal/lutong_zhao_mymail_sutd_edu_sg/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flutong%5Fzhao%5Fmymail%5Fsutd%5Fedu%5Fsg%2FDocuments%2FDL%5FProject%2Fvocabs&originalPath=aHR0cHM6Ly9zdXRkYXBhYy1teS5zaGFyZXBvaW50LmNvbS86ZjovZy9wZXJzb25hbC9sdXRvbmdfemhhb19teW1haWxfc3V0ZF9lZHVfc2cvRXBTY2VYbThfdzVEZ0lnY29BMHRjN3NCYmE5c0xSWkVjX2k1djFJYnhudGpiZz9ydGltZT04Z0V5LXdMcTEwZw). You should save encoder and decoder files to `./models/` and vocab files to `./data/` folder.
 
-#### 2. Download the dataset
+
+
+<br>
+
+### Step 2.  Option 2.Train from scratch
+
+#### i). Download the dataset
 
 ```bash
 pip install -r requirements.txt
@@ -89,18 +84,19 @@ chmod +x download.sh
 ./download.sh
 ```
 
-#### 3. Preprocessing
+#### ii). Preprocessing
 
 ```bash
 python build_vocab.py   
 python resize.py
 ```
 
-#### 4. Train the model
+#### iii). Train the model
 
 ```bash
 python train.py    
 ```
+<br>
 
-### A Preview for our GUI
+###  Preview for our GUI
 ![Preview](png/group_people.png)
