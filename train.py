@@ -15,6 +15,9 @@ from torchvision import transforms
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def main(args):
+    train_losses = []
+    train_acc = []
+
     # Create model directory
     if not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
@@ -30,7 +33,6 @@ def main(args):
     # Load vocabulary wrapper
     with open(args.vocab_path, 'rb') as f:
         vocab = pickle.load(f)
-    
     # Build data loader
     data_loader = get_loader(args.image_dir, args.caption_path, vocab, 
                              transform, args.batch_size,
@@ -48,6 +50,9 @@ def main(args):
     # Train the models
     total_step = len(data_loader)
     for epoch in range(args.num_epochs):
+        losses = []
+        accuracy = 0.0
+
         for i, (images, captions, lengths) in enumerate(data_loader):
             
             # Set mini-batch dataset
@@ -59,6 +64,13 @@ def main(args):
             features = encoder(images)
             outputs = decoder(features, captions, lengths)
             loss = criterion(outputs, targets)
+
+            # record accuracy and loss
+            losses.append(loss.item())
+            topv,topi = outputs.topk(1, dim=1)
+            targets = targets.unsqueeze(-1)
+            accuracy += float((topi == targets).sum())/targets.shape[0]
+            # update params
             decoder.zero_grad()
             encoder.zero_grad()
             loss.backward()
@@ -66,22 +78,37 @@ def main(args):
 
             # Print log info
             if i % args.log_step == 0:
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Perplexity: {:5.4f}'
-                      .format(epoch, args.num_epochs, i, total_step, loss.item(), np.exp(loss.item()))) 
-                
+                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Perplexity: {:5.4f}, Accuracy: {:.4f}'
+                      .format(epoch+1, args.num_epochs, i, total_step, loss.item(), np.exp(loss.item()), accuracy/float(i+1))) 
+                with open('my_train_loss_t4_resnext.txt', 'a') as fi:
+                    fi.write('\n'+'epoch = {}, i = {}, tr_loss = {}, acc = {}'.format(epoch+1, i+1, loss.item(), accuracy/float(i+1)))
+
             # Save the model checkpoints
             if (i+1) % args.save_step == 0:
                 torch.save(decoder.state_dict(), os.path.join(
-                    args.model_path, 'decoder-{}-{}.ckpt'.format(epoch+1, i+1)))
+                    args.model_path, 'my-decoder-{}-{}-t4-resnext.ckpt'.format(epoch+1, i+1)))
                 torch.save(encoder.state_dict(), os.path.join(
-                    args.model_path, 'encoder-{}-{}.ckpt'.format(epoch+1, i+1)))
+                    args.model_path, 'my-encoder-{}-{}-t4-resnext.ckpt'.format(epoch+1, i+1)))
+                
+        train_losses.append(sum(losses)/total_step)
+        train_acc.append(accuracy/total_step)
+
+        # save losses over epoch
+        f = open("train_loss.txt","a")
+        f.write(str(train_losses))
+        f.close()
+
+        # save accuracies over epoch
+        f = open("train_acc.txt","a")
+        f.write(str(train_acc))
+        f.close()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_path', type=str, default='models/' , help='path for saving trained models')
     parser.add_argument('--crop_size', type=int, default=224 , help='size for randomly cropping images')
-    parser.add_argument('--vocab_path', type=str, default='data/vocab.pkl', help='path for vocabulary wrapper')
+    parser.add_argument('--vocab_path', type=str, default='data/vocab_stemmed_t4.pkl', help='path for vocabulary wrapper')
     parser.add_argument('--image_dir', type=str, default='data/resized2014', help='directory for resized images')
     # parser.add_argument('--caption_path', type=str, default='data/annotations/captions_train2014.json', help='path for train annotation json file')
     # if on JupyterLab:
@@ -92,8 +119,8 @@ if __name__ == '__main__':
     
     # Model parameters
     parser.add_argument('--embed_size', type=int , default=256, help='dimension of word embedding vectors')
-    parser.add_argument('--hidden_size', type=int , default=512, help='dimension of lstm hidden states')
-    parser.add_argument('--num_layers', type=int , default=1, help='number of layers in lstm')
+    parser.add_argument('--hidden_size', type=int , default=512, help='dimension of gru hidden states')
+    parser.add_argument('--num_layers', type=int , default=1, help='number of layers in gru')
     
     parser.add_argument('--num_epochs', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=128)

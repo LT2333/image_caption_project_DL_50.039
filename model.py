@@ -2,13 +2,14 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 from torch.nn.utils.rnn import pack_padded_sequence
-
+from torch.nn import functional as F
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size):
         """Load the pretrained ResNet-152 and replace top fc layer."""
         super(EncoderCNN, self).__init__()
-        resnet = models.resnet152(pretrained=True)
+        # resnet = models.resnet50(pretrained=True)
+        resnet = models.resnext101_32x8d(pretrained=True)  # experiment with resNext
         modules = list(resnet.children())[:-1]      # delete the last fc layer.
         self.resnet = nn.Sequential(*modules)
         self.linear = nn.Linear(resnet.fc.in_features, embed_size)
@@ -28,17 +29,21 @@ class DecoderRNN(nn.Module):
         """Set the hyper-parameters and build the layers."""
         super(DecoderRNN, self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size)
-        self.lstm = nn.LSTM(embed_size, hidden_size, num_layers, batch_first=True)
+        self.gru = nn.GRU(embed_size, hidden_size, num_layers, batch_first=True)
         self.linear = nn.Linear(hidden_size, vocab_size)
         self.max_seg_length = max_seq_length
+        self.dropout = nn.Dropout(0.2)
+        # self.bn = nn.BatchNorm1d(vocab_size, momentum=0.01)
         
     def forward(self, features, captions, lengths):
         """Decode image feature vectors and generates captions."""
         embeddings = self.embed(captions)
         embeddings = torch.cat((features.unsqueeze(1), embeddings), 1)
-        packed = pack_padded_sequence(embeddings, lengths, batch_first=True) 
-        hiddens, _ = self.lstm(packed)
-        outputs = self.linear(hiddens[0])
+        packed = pack_padded_sequence(embeddings, lengths, batch_first=True)
+        hiddens, _ = self.gru(packed)
+        outputs = self.dropout(hiddens[0])
+        outputs = self.linear(outputs)
+        # outputs = self.bn(outputs)
         return outputs
     
     def sample(self, features, states=None):
@@ -46,7 +51,7 @@ class DecoderRNN(nn.Module):
         sampled_ids = []
         inputs = features.unsqueeze(1)
         for i in range(self.max_seg_length):
-            hiddens, states = self.lstm(inputs, states)          # hiddens: (batch_size, 1, hidden_size)
+            hiddens, states = self.gru(inputs, states)           # hiddens: (batch_size, 1, hidden_size)
             outputs = self.linear(hiddens.squeeze(1))            # outputs:  (batch_size, vocab_size)
             _, predicted = outputs.max(1)                        # predicted: (batch_size)
             sampled_ids.append(predicted)
@@ -54,3 +59,32 @@ class DecoderRNN(nn.Module):
             inputs = inputs.unsqueeze(1)                         # inputs: (batch_size, 1, embed_size)
         sampled_ids = torch.stack(sampled_ids, 1)                # sampled_ids: (batch_size, max_seq_length)
         return sampled_ids
+
+    def sample_beam_search(self, inputs, states=None, max_len=20, beam_width=5):
+        """Generate captions for given image features using beam search."""
+        idx_sequences = [[[], 0.0, inputs, states]]
+        for _ in range(max_len):
+            # Store all the potential candidates at each step
+            all_candidates = []
+            # Predict the next word idx for each of the top sequences
+            for idx_seq in idx_sequences:
+                hiddens, states = self.gru(idx_seq[2].unsqueeze(1), idx_seq[3])
+                outputs = self.linear(hiddens.squeeze(1))
+                # Transform outputs to log probabilities to avoid floating-point 
+                # underflow caused by multiplying very small probabilities
+                log_probs = F.log_softmax(outputs, -1)
+                top_log_probs, top_idx = log_probs.topk(beam_width, 1)
+                top_idx = top_idx.squeeze(0)
+                # create a new set of top sentences for next round
+                for i in range(beam_width):
+                    next_idx_seq, log_prob = idx_seq[0][:], idx_seq[1]
+                    next_idx_seq.append(top_idx[i].item())
+                    log_prob += top_log_probs[0][i].item()
+                    # Indexing 1-dimensional top_idx gives 0-dimensional tensors.
+                    # We have to expand dimensions before embedding them
+                    inputs = self.embed(top_idx[i].unsqueeze(0))
+                    all_candidates.append([next_idx_seq, log_prob, inputs, states])
+            # Keep only the top sequences according to their total log probability
+            ordered = sorted(all_candidates, key=lambda x: x[1], reverse=True)
+            idx_sequences = ordered[:beam_width]
+        return [idx_seq[0] for idx_seq in idx_sequences]

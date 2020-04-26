@@ -3,7 +3,7 @@ import pickle
 import argparse
 from collections import Counter
 from pycocotools.coco import COCO
-from nltk.stem.snowball import SnowballStemmer
+
 
 class Vocabulary(object):
     """Simple vocabulary wrapper."""
@@ -11,7 +11,6 @@ class Vocabulary(object):
         self.word2idx = {}
         self.idx2word = {}
         self.idx = 0
-        self.stemmer = SnowballStemmer("english")
 
     def add_word(self, word):
         if not word in self.word2idx:
@@ -20,10 +19,9 @@ class Vocabulary(object):
             self.idx += 1
 
     def __call__(self, word):
-        stemmed_word = self.stemmer.stem(word)
-        if not stemmed_word in self.word2idx:
+        if not word in self.word2idx:
             return self.word2idx['<unk>']
-        return self.word2idx[stemmed_word]
+        return self.word2idx[word]
 
     def __len__(self):
         return len(self.word2idx)
@@ -33,12 +31,9 @@ def build_vocab(json, threshold):
     coco = COCO(json)
     counter = Counter()
     ids = coco.anns.keys()
-    sb_stemmer = SnowballStemmer("english")
-
     for i, id in enumerate(ids):
         caption = str(coco.anns[id]['caption'])
         tokens = nltk.tokenize.word_tokenize(caption.lower())
-        tokens = [sb_stemmer.stem(word) for word in tokens]
         counter.update(tokens)
 
         if (i+1) % 1000 == 0:
@@ -46,7 +41,7 @@ def build_vocab(json, threshold):
 
     # If the word frequency is less than 'threshold', then the word is discarded.
     words = [word for word, cnt in counter.items() if cnt >= threshold]
-    print('len: ',len(words))
+
     # Create a vocab wrapper and add some special tokens.
     vocab = Vocabulary()
     vocab.add_word('<pad>')
@@ -60,7 +55,6 @@ def build_vocab(json, threshold):
     return vocab
 
 def main(args):
-    print("count threshold:",args.threshold)
     vocab = build_vocab(json=args.caption_path, threshold=args.threshold)
     vocab_path = args.vocab_path
     with open(vocab_path, 'wb') as f:
@@ -78,9 +72,9 @@ if __name__ == '__main__':
     parser.add_argument('--caption_path', type=str, 
                         default='../datasets/coco2014/trainval_coco2014_captions/captions_train2014.json', 
                         help='path for train annotation file')
-    parser.add_argument('--vocab_path', type=str, default='./data/vocab_stemmed_t10.pkl', 
+    parser.add_argument('--vocab_path', type=str, default='./data/vocab2.pkl', 
                         help='path for saving vocabulary wrapper')
-    parser.add_argument('--threshold', type=int, default=10, 
+    parser.add_argument('--threshold', type=int, default=4, 
                         help='minimum word count threshold')
     args = parser.parse_args()
     main(args)

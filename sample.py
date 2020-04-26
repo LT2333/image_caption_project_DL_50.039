@@ -35,7 +35,7 @@ def main(args):
 
     # Build models
     encoder = EncoderCNN(args.embed_size).eval()  # eval mode (batchnorm uses moving mean/variance)
-    decoder = DecoderRNN(args.embed_size, args.hidden_size, len(vocab), args.num_layers)
+    decoder = DecoderRNN(args.embed_size, args.hidden_size, len(vocab), args.num_layers).eval()
     encoder = encoder.to(device)
     decoder = decoder.to(device)
 
@@ -86,9 +86,9 @@ def start_app_pred(img_pth,encoder_pth,decoder_pth):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--image', type=str, required=True, help='input image for generating caption')
-    parser.add_argument('--encoder_path', type=str, default='models/encoder-5-3000.pkl', help='path for trained encoder')
-    parser.add_argument('--decoder_path', type=str, default='models/decoder-5-3000.pkl', help='path for trained decoder')
-    parser.add_argument('--vocab_path', type=str, default='data/vocab.pkl', help='path for vocabulary wrapper')
+    parser.add_argument('--encoder_path', type=str, default='models/my-encoder-5-3000-t4-resnext.ckpt', help='path for trained encoder')
+    parser.add_argument('--decoder_path', type=str, default='models/my-decoder-5-3000-t4-resnext.ckpt', help='path for trained decoder')
+    parser.add_argument('--vocab_path', type=str, default='data/vocab_stemmed_t4.pkl', help='path for vocabulary wrapper')
     
     # Model parameters (should be same as paramters in train.py)
     parser.add_argument('--embed_size', type=int , default=256, help='dimension of word embedding vectors')

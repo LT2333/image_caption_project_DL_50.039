@@ -3,3 +3,5 @@ data
 __pycache__
 .empty
 .ipynb_checkpoints
+download_pretrained.sh
+Try.ipynb
