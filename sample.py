@@ -74,7 +74,7 @@ def start_app_pred(img_pth,encoder_pth,decoder_pth):
     parser.add_argument('--image', type=str, default=img_pth, help='input image for generating caption')
     parser.add_argument('--encoder_path', type=str, default=encoder_pth, help='path for trained encoder')
     parser.add_argument('--decoder_path', type=str, default=decoder_pth, help='path for trained decoder')
-    parser.add_argument('--vocab_path', type=str, default='data/vocab.pkl', help='path for vocabulary wrapper')
+    parser.add_argument('--vocab_path', type=str, default='data/vocab_stemmed_t4.pkl', help='path for vocabulary wrapper')
     
     # Model parameters (should be same as paramters in train.py)
     parser.add_argument('--embed_size', type=int , default=256, help='dimension of word embedding vectors')

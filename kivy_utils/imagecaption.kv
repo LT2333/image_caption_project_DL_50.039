@@ -1,35 +1,34 @@
 <MainScreen>:
     name: 'main'
+    Button:
+        font_size: 30
+        pos: 100,100
+        size_hint: (0.6,0.6)
+        pos_hint: {'x':.2, 'y':.2}
+        text: 'Select Image to Predict'
+        on_release: root.show_load()
 
+<LoadDialog>:
     BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+
         BoxLayout:
-            orientation: 'vertical'
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
 
-            BoxLayout:
-                size_hint_y: None
-                height: 35
+            Button:
+                text: "Confirm"
+                on_release: root.selected(filechooser.selection)
 
-                Button:
-                    text: 'Icon View'
-                    on_press: fc.view_mode = 'icon'
-                Button:
-                    text: 'List View'
-                    on_press: fc.view_mode = 'list'
-
-            FileChooser:
-                id: fc
-                FileChooserIconLayout
-                FileChooserListLayout
-
-            GridLayout:
-                orientation: 'vertical'
-                size_hint_y: None
-                height: 35
-                
-                Button:
-                    text: 'Predict'
-                    on_release: root.selected(fc.selection)
-
+<ImgPred>
+    BoxLayout:
         BoxLayout:
             orientation: 'vertical'
 
@@ -41,5 +40,7 @@
                 height: 100
                 Label:
                     id: pred
-                    text:'The prediction of selected image\nwill be displayed here'
                     font_size: 18
+                Button:
+                    text: 'Click to Select Another Image'
+                    on_release: root.show_load()
