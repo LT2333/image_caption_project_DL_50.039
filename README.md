@@ -7,36 +7,8 @@ The Image Captioning project for SUTD 50.039 Deep Learning
 # A video demo on our project
 https://www.dropbox.com/sh/qfabcdkb6y6ulgq/AABfJeCEvYbmFCTgDyF2Ovgea?dl=0
 
-# Reference 
-Adapted code from:
-https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning
 
-
-
-
-## Usage 
-
-#### 1) Using GUI
-```bash
-conda install kivy -c conda-forge  
-python gui.py 
-```
-*If you counter problem of pygame on Mac system:*
-    ```
-    pip install pygame
-    ``` 
-
-#### 2) Test the model from the terminal
-
-```bash
-python sample.py --image='png/example.png'
-```
-
-
-
-<br>
-
-## Prepare model
+# Prepare model
 
 ### Step 1. Prepare environment 
 The package pycocotools requires cython and a C compiler to install correctly.
@@ -88,5 +60,30 @@ python train.py
 ```
 <br>
 
+# Usage 
+
+#### 1) Using GUI
+```bash
+conda install kivy -c conda-forge  
+python gui.py 
+```
+*If you counter problem of pygame on Mac system:*
+    ```
+    pip install pygame
+    ``` 
+
+#### 2) Test the model from the terminal
+
+```bash
+python sample.py --image='png/example.png'
+```
+<br>
+
 ###  Preview for our GUI
 ![Preview](png/group_people.png)
+
+
+
+# Reference 
+Adapted code from:
+https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning
