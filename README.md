@@ -2,7 +2,7 @@
 The Image Captioning project for SUTD 50.039 Deep Learning
 <br>
 
-*collaborators: Zhao Lutong (1002872), Tang Xiaoyue (1002968), Wang Zijia (1002885)*
+*Collaborators: Tang Xiaoyue (1002968), Wang Zijia (1002885), Zhao Lutong (1002872) (alphabetical order)*
 
 # A video demo on our project
 https://www.dropbox.com/sh/qfabcdkb6y6ulgq/AABfJeCEvYbmFCTgDyF2Ovgea?dl=0
@@ -30,9 +30,9 @@ pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&sub
 ```
 
 ### Step 2. Option 1. Using Pretrained model
-If you do not want to train the model from scratch, you can use our 3 trained models. You can download the pretrained model [here](https://sutdapac-my.sharepoint.com/personal/lutong_zhao_mymail_sutd_edu_sg/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flutong%5Fzhao%5Fmymail%5Fsutd%5Fedu%5Fsg%2FDocuments%2FDL%5FProject%2Fmodels&originalPath=aHR0cHM6Ly9zdXRkYXBhYy1teS5zaGFyZXBvaW50LmNvbS86ZjovZy9wZXJzb25hbC9sdXRvbmdfemhhb19teW1haWxfc3V0ZF9lZHVfc2cvRW9oMS1PTEZjN1pHcDBlQnV0Zk9VZVFCTDhfbDN0bzRCTGlVd0NkNDhhYjdJQT9ydGltZT15ZWhGN3dMcTEwZw) and the vocabulary file [here](https://sutdapac-my.sharepoint.com/personal/lutong_zhao_mymail_sutd_edu_sg/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flutong%5Fzhao%5Fmymail%5Fsutd%5Fedu%5Fsg%2FDocuments%2FDL%5FProject%2Fvocabs&originalPath=aHR0cHM6Ly9zdXRkYXBhYy1teS5zaGFyZXBvaW50LmNvbS86ZjovZy9wZXJzb25hbC9sdXRvbmdfemhhb19teW1haWxfc3V0ZF9lZHVfc2cvRXBTY2VYbThfdzVEZ0lnY29BMHRjN3NCYmE5c0xSWkVjX2k1djFJYnhudGpiZz9ydGltZT04Z0V5LXdMcTEwZw). You should save encoder and decoder files to `./models/` and vocab files to `./data/` folder.
+If you do not want to train the model from scratch, you can use our 3 trained models. You can download the pretrained model [here](https://sutdapac-my.sharepoint.com/:f:/g/personal/lutong_zhao_mymail_sutd_edu_sg/Eoh1-OLFc7ZGp0eButfOUeQBoNQuAnRpbO11Fs73gcbETg?e=NDsPff) and the vocabulary file [here](https://sutdapac-my.sharepoint.com/:f:/g/personal/lutong_zhao_mymail_sutd_edu_sg/EpSceXm8_w5DgIgcoA0tc7sBba9sLRZEc_i5v1Ibxntjbg?e=qCS8rd). You should save encoder and decoder files to `./models/` and vocab files to `./data/` folder.
 
-
+For detailed information about this section, please read [readme_models.txt](readme_models.txt)
 
 <br>
 
